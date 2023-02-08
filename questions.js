@@ -8,7 +8,7 @@ async function startScanner() {
     try {
       const cameras = await Instascan.Camera.getCameras();
       if (cameras.length > 0) {
-        scanner.start(cameras[1]);
+        scanner.start(cameras[0]);
       } else {
         console.error("Nenhuma câmera encontrada.");
       }
@@ -32,9 +32,14 @@ async function startScanner() {
   
   async function checkCameraPermission() {
     try {
-      const result = await navigator.permissions.query({ name: "camera" });
-      if (result.state === "granted") {
-        startScanner();
+      const result = await navigator.permissions.request({ name: "camera" });
+    if (result === "granted") {
+      const cameras = await Instascan.Camera.getCameras();
+      for (const camera of cameras) {
+        if (camera.name.toLowerCase().includes("back")) {
+          startScanner(camera);
+          break;
+        }
       } else if (result.state === "prompt") {
         requestCameraPermission();
       } else if (result.state === "denied") {
@@ -58,7 +63,7 @@ scanner.addListener("scan", function(content) {
 });
 Instascan.Camera.getCameras().then(function(cameras) {
   if (cameras.length > 0) {
-    scanner.start(cameras[1]);
+    scanner.start(cameras[0]);
   } else {
     console.error("Nenhuma câmera encontrada.");
   }
