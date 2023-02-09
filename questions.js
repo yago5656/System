@@ -40,7 +40,7 @@ async function startScanner() {
           startScanner(camera);
           break;
         }
-      } else if (result.state === "prompt") {
+      } else (result.state === "prompt") {
         requestCameraPermission();
       } else if (result.state === "denied") {
         console.error("Permissão da câmera negada.");
